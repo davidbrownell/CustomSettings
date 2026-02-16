@@ -59,8 +59,9 @@
 --
 --  - prompt_context        Display context (username@hostname).
 --  - prompt_dir:           Display current working directory.
+--  - prompt_error:         Display error indicator when last command failed.
 --  - prompt_git:           Display git branch and status.
---  - prompt_status:        Display errorlevel, admin, and battery.
+--  - prompt_status:        Display admin and battery status.
 --  - prompt_virtualenv:    Display current virtual environment.
 --  - prompt_time:          Display the day of week and the time.
 --  - prompt_duration:      Display execution time of the previous command.
@@ -174,6 +175,7 @@ defaults.prompt_segments = {
 }
 -- Default right prompt segments.
 defaults.rprompt_segments = {
+    'prompt_error',
     'prompt_duration',
     'prompt_time',
 }
@@ -407,10 +409,6 @@ local function sym_sep(sym)
 end
 function ag.prompt_status()
     local symbols = ''
-    if os.geterrorlevel() ~= 0 then
-        local sym = ag.CROSS
-        symbols = symbols..as_fore(ag.red)..sym..sym_sep(sym)
-    end
     if os.isuseradmin() then
         local sym = ag.LIGHTNING
         symbols = symbols..as_fore(ag.yellow)..sym..sym_sep(sym)
@@ -437,6 +435,15 @@ function ag.prompt_status()
     if symbols ~= '' then
         symbols = ' '..symbols
         ag.prompt_segment(ag.PRIMARY_FG, ag.default, symbols)
+    end
+end
+
+-- Error: display error indicator and error level when last command failed
+function ag.prompt_error()
+    local errorlevel = os.geterrorlevel()
+    if errorlevel ~= 0 then
+        local sym = ag.CROSS
+        return ag.red, ag.PRIMARY_FG, ' '..sym..sym_sep(sym)..errorlevel..' '
     end
 end
 
