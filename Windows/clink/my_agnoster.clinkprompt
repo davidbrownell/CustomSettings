@@ -526,12 +526,6 @@ end
 -- BEGIN EXTENSIONS TO AGNOSTER
 
 
----- Duration tracking ---------------------------------------------------------
-
-local begin_duration
-local last_duration
-
-
 ---- prompt segments -----------------------------------------------------------
 
 -- Display current time
@@ -540,6 +534,9 @@ function ag.prompt_time()
 end
 
 -- Display execution time of the previous command
+local begin_duration
+local last_duration
+
 function ag.prompt_duration()
     if last_duration then
         local min_duration = tonumber(os.getenv("AGNOSTER_DURATION_MIN") or "0.5")
